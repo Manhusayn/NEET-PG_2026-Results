@@ -3,7 +3,7 @@ import re
 import pymupdf
 
 
-ROLL_PATTERN = re.compile(r"266610\d{5}")
+ROLL_PATTERN = re.compile(r"2666\d{7}")
 
 
 def get_page_rolls(doc, page_index):
@@ -14,7 +14,7 @@ def get_page_rolls(doc, page_index):
 def get_result(pdf_path, roll_number):
     roll_number = str(roll_number).strip()
 
-    if not re.fullmatch(r"266610\d{5}", roll_number):
+    if not re.fullmatch(r"2666\d{7}", roll_number):
         return {"error": "Invalid roll number"}
 
     target = int(roll_number)
