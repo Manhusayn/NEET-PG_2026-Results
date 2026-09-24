@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEET-PG 2026 Result Finder</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="card">
+
+        <h1>NEET-PG 2026</h1>
+
+        <p class="subtitle">
+            Result Finder
+        </p>
+
+        <p class="description">
+            Enter the roll number to fetch the result instantly.
+        </p>
+
+        <form id="resultForm">
+
+            <label for="rollNumber">
+                Roll Number
+            </label>
+
+            <input
+                id="rollNumber"
+                type="text"
+                placeholder="Enter 11-digit roll number"
+                maxlength="11"
+                inputmode="numeric"
+                autocomplete="off"
+            >
+
+            <button id="searchButton" type="submit">
+                Search
+            </button>
+
+        </form>
+
+        <div id="message"></div>
+
+        <div id="result" class="result hidden">
+
+            <div class="row">
+                <span>Roll Number</span>
+                <strong id="roll"></strong>
+            </div>
+
+            <div class="row">
+                <span>Application Number</span>
+                <strong id="application"></strong>
+            </div>
+
+            <div class="row">
+                <span>Score</span>
+                <strong id="score"></strong>
+            </div>
+
+            <div class="row">
+                <span>NEET-PG Rank</span>
+                <strong id="rank"></strong>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
