@@ -2,48 +2,78 @@ import sys
 import re
 import pymupdf
 
+
+ROLL_PATTERN = re.compile(r"266610\d{5}")
+
+
+def get_page_rolls(doc, page_index):
+    text = doc[page_index].get_text("text")
+    return ROLL_PATTERN.findall(text)
+
+
 def get_result(pdf_path, roll_number):
     roll_number = str(roll_number).strip()
 
     if not re.fullmatch(r"266610\d{5}", roll_number):
         return {"error": "Invalid roll number"}
 
-    serial = int(roll_number[-5:])
-    page_index = (serial - 1) // 50
+    target = int(roll_number)
 
     doc = pymupdf.open(pdf_path)
 
-    if page_index >= len(doc):
-        doc.close()
-        return {"error": "Roll number is outside the PDF"}
+    low = 0
+    high = len(doc) - 1
 
-    text = doc[page_index].get_text("text")
+    while low <= high:
+        mid = (low + high) // 2
+
+        rolls = get_page_rolls(doc, mid)
+
+        if not rolls:
+            high = mid - 1
+            continue
+
+        first_roll = int(rolls[0])
+        last_roll = int(rolls[-1])
+
+        if target < first_roll:
+            high = mid - 1
+
+        elif target > last_roll:
+            low = mid + 1
+
+        else:
+            # Roll number should be on this page.
+            text = doc[mid].get_text("text")
+            lines = [x.strip() for x in text.splitlines() if x.strip()]
+
+            for i, line in enumerate(lines):
+                if line == roll_number:
+                    application = lines[i - 1]
+                    score = lines[i + 1]
+                    rank = lines[i + 2]
+
+                    doc.close()
+
+                    return {
+                        "roll_number": roll_number,
+                        "application_number": application,
+                        "score": score,
+                        "rank": rank,
+                        "page": mid + 1
+                    }
+
+            doc.close()
+
+            return {
+                "error": "Roll number not found",
+                "page": mid + 1
+            }
+
     doc.close()
 
-    lines = [x.strip() for x in text.splitlines() if x.strip()]
-
-    for i, line in enumerate(lines):
-        if line == roll_number:
-            application = lines[i - 1]
-            score = lines[i + 1]
-            rank = lines[i + 2]
-
-            if (
-                re.fullmatch(r"PG\d+", application)
-                and score.isdigit()
-                and rank.isdigit()
-            ):
-                return {
-                    "roll_number": roll_number,
-                    "application_number": application,
-                    "score": int(score),
-                    "rank": int(rank),
-                    "page": page_index + 1
-                }
-
     return {
-        "error": "Roll number not found",
-        "page": page_index + 1
+        "error": "Roll number not found"
     }
 
 
